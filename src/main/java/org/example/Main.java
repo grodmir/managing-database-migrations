@@ -15,16 +15,24 @@
 //    }
 //}
 
-package org.example;
+//package org.example;
+//
+//import java.sql.Connection;
+//
+//public class Main {
+//    public static void main(String[] args) {
+//        try (Connection connection = ConnectionManager.getConnection()) {
+//            System.out.println("Connected to the database successfully!");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+//}
 
-import java.sql.Connection;
+package org.example;
 
 public class Main {
     public static void main(String[] args) {
-        try (Connection connection = ConnectionManager.getConnection()) {
-            System.out.println("Connected to the database successfully!");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        MigrationTableManager.ensureMigrationTableExists();
     }
 }
