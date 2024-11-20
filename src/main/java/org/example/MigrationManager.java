@@ -28,7 +28,7 @@ public class MigrationManager {
 
         return allMigrations.stream()
                 .filter(migration -> !appliedMigrations.contains(migration.getFileName()))
-                .sorted(Comparator.comparing(MigrationFile::getFileName))
+                .sorted(Comparator.comparing(migration -> extractTimestamp(migration.getFileName())))
                 .collect(Collectors.toList());
     }
 
@@ -50,5 +50,15 @@ public class MigrationManager {
         }
 
         return appliedMigrations;
+    }
+
+    private long extractTimestamp(String fileName) {
+        // Предполагаем, что имя файла начинается с временной метки формата YYYYMMDDHHMMSS
+        try {
+            String timestampPart = fileName.split("_")[0]; // Извлекаем часть до "_"
+            return Long.parseLong(timestampPart); // Преобразуем в число для сортировки
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid migration file name format: " + fileName, e);
+        }
     }
 }

@@ -25,8 +25,4 @@ public class PropertiesUtils {
         }
         return value;
     }
-
-    public static String getProperty(String key, String defaultValue) {
-        return properties.getProperty(key, defaultValue);
-    }
 }

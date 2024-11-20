@@ -8,6 +8,7 @@ public class ConnectionManager {
 
     /**
      * Создаёт и возвращает новое подключение к базе данных.
+     *
      * @return Объект Connection.
      * @throws SQLException Если соединение не удалось.
      */
