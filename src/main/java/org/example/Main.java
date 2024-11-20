@@ -15,24 +15,18 @@
 //    }
 //}
 
-//package org.example;
-//
-//import java.sql.Connection;
-//
-//public class Main {
-//    public static void main(String[] args) {
-//        try (Connection connection = ConnectionManager.getConnection()) {
-//            System.out.println("Connected to the database successfully!");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-//}
-
 package org.example;
 
+import java.io.IOException;
+import java.util.List;
+
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        MigrationFileReader migrationFileReader = new MigrationFileReader();
         MigrationTableManager.ensureMigrationTableExists();
+        MigrationManager migrationManager = new MigrationManager(migrationFileReader);
+
+        List<MigrationFile> migrations = migrationManager.getPendingMigrations();
+        migrations.forEach(System.out::println);
     }
 }
