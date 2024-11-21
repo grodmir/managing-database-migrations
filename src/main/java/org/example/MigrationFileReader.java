@@ -12,8 +12,8 @@ import java.util.List;
 
 public class MigrationFileReader {
 
-    private static final String MIGRATION_FOLDER = "migrations"; // Папка с миграциями
-    private static final String FILE_PATTERN = "\\d{14}_.*\\.sql"; // TODO определиться с форматом хранения
+    private static final String MIGRATION_FOLDER = "migrations";
+    private static final String FILE_PATTERN = "\\d{14}_.*\\.sql";
 
     /**
      * Читает и возвращает список миграций из папки ресурсов.
@@ -33,18 +33,16 @@ public class MigrationFileReader {
         try {
             migrationPath = Paths.get(resource.toURI()); // Преобразуем URL в Path
         } catch (URISyntaxException e) {
-            throw new RuntimeException("Invalid URI for migration folder", e);
+            throw new IOException("Failed to parse URI for migration folder: " + resource, e);
         }
 
-        // Находим файлы и фильтруем их по шаблону
         List<Path> files = Files.list(migrationPath)
                 .filter(path -> path.getFileName().toString().matches(FILE_PATTERN))
                 .toList();
 
-        // Преобразуем файлы в объекты MigrationFile и сортируем по имени
         return files.stream()
                 .map(this::parseMigrationFile)
-                .sorted(Comparator.comparing(MigrationFile::getFileName)) // Сортировка по имени файла
+                .sorted(Comparator.comparing(MigrationFile::getFileName))
                 .toList();
     }
 

@@ -23,7 +23,7 @@ public class MigrationTableManager {
             statement.execute(CREATE_TABLE_SQL);
             System.out.println("Migration table checked/created successfully.");
         } catch (SQLException e) {
-            throw new RuntimeException("Error while ensuring migration table exists: " + e.getMessage(), e);
+            throw new IllegalStateException("Error while ensuring migration table exists: " + e.getMessage(), e);
         }
     }
 }

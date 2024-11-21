@@ -17,7 +17,6 @@ public class ConnectionManager {
         String username = PropertiesUtils.getProperty("db.username");
         String password = PropertiesUtils.getProperty("db.password");
 
-        // Загружаем драйвер (необязательно для современных JVM, но полезно для логирования)
         try {
             Class.forName(PropertiesUtils.getProperty("db.driver"));
         } catch (ClassNotFoundException e) {

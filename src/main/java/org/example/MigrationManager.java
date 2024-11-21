@@ -21,10 +21,16 @@ public class MigrationManager {
 
     /**
      * Возвращает список миграций, которые ещё не были применены.
+     *
+     * @return список миграций, которые ещё не были применены.
      */
     public List<MigrationFile> getPendingMigrations() throws IOException {
         List<MigrationFile> allMigrations = migrationFileReader.readMigrationFiles();
         Set<String> appliedMigrations = getAppliedMigrations();
+
+        if (allMigrations.isEmpty()) {
+            throw new IllegalStateException("No migration files found in the folder. Check your configuration.");
+        }
 
         return allMigrations.stream()
                 .filter(migration -> !appliedMigrations.contains(migration.getFileName()))
@@ -34,6 +40,8 @@ public class MigrationManager {
 
     /**
      * Загружает список выполненных миграций из базы данных.
+     *
+     * @return множество выполненный миграций
      */
     private Set<String> getAppliedMigrations() {
         String query = "SELECT file_name FROM applied_migrations";
@@ -46,7 +54,11 @@ public class MigrationManager {
                 appliedMigrations.add(resultSet.getString("file_name"));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to load applied migrations", e);
+            if (e.getMessage().contains("applied_migrations")) {
+                throw new IllegalStateException("Table 'applied_migrations' not found. Ensure the database schema is initialized.", e);
+            } else {
+                throw new IllegalStateException("Error querying the database for applied migrations.", e);
+            }
         }
 
         return appliedMigrations;
@@ -56,7 +68,7 @@ public class MigrationManager {
         // Предполагаем, что имя файла начинается с временной метки формата YYYYMMDDHHMMSS
         try {
             String timestampPart = fileName.split("_")[0]; // Извлекаем часть до "_"
-            return Long.parseLong(timestampPart); // Преобразуем в число для сортировки
+            return Long.parseLong(timestampPart);
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid migration file name format: " + fileName, e);
         }

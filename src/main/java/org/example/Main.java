@@ -5,7 +5,6 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        // Этап 1: Убедимся, что таблица для выполненных миграций существует
         MigrationTableManager.ensureMigrationTableExists();
         MigrationFileReader migrationFileReader = new MigrationFileReader();
         MigrationManager migrationManager = new MigrationManager(migrationFileReader);

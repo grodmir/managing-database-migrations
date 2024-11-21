@@ -37,11 +37,11 @@ public class MigrationExecutor {
 
             } catch (SQLException e) {
                 connection.rollback();
-                throw new RuntimeException("Error during migration execution. Transaction rolled back.", e);
+                throw new SQLException("Error during migration execution. Transaction rolled back.", e);
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to execute migrations: " + e.getMessage(), e);
+            throw new IllegalStateException("Failed to execute migrations: " + e.getMessage(), e);
         }
     }
 
