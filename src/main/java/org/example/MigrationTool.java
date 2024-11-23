@@ -1,8 +1,11 @@
 package org.example;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 public class MigrationTool {
     public static void run() {
         try {
@@ -17,9 +20,9 @@ public class MigrationTool {
 
             // Обрабатываем случай, если список миграций оказался null или пустым
             if (migrations == null || migrations.isEmpty()) {
-                System.out.println("No new migrations to apply.");
+                log.info("Нет новых миграций для применения.");
             } else {
-                System.out.println("Applying migrations:");
+                log.info("Применение миграций:");
                 // Выводим по порядку все миграции, которые должны быть выполнены
                 migrations.forEach(m -> System.out.println(" - " + m.getFileName()));
 
@@ -29,19 +32,17 @@ public class MigrationTool {
                 // Выполняем все необходимые миграции
                 try {
                     migrationExecutor.executeMigrations(migrations);
+                    log.info("Все миграции успешно применены.");
                 } catch (Exception e) {
-                    System.err.println("Error while executing migrations: " + e.getMessage());
-                    e.printStackTrace();
+                    log.error("Ошибка при выполнении миграций: {}", e.getMessage(), e);
                 }
             }
 
-            System.out.println("Migration process completed.");
+            log.info("Процесс миграции завершён.");
         } catch (IOException e) {
-            System.err.println("Error during migration setup: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Ошибка во время настройки миграции: {}", e.getMessage(), e);
         } catch (Exception e) {
-            System.err.println("Unexpected error occurred: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Произошла непредвиденная ошибка: {}", e.getMessage(), e);;
         }
     }
 }

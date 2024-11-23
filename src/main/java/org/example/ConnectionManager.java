@@ -1,28 +1,42 @@
 package org.example;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+@Slf4j
 public class ConnectionManager {
 
     /**
      * Создаёт и возвращает новое подключение к базе данных.
      *
      * @return Объект Connection.
-     * @throws SQLException Если соединение не удалось.
      */
     public static Connection getConnection() throws SQLException {
-        String url = PropertiesUtils.getProperty("db.url");
-        String username = PropertiesUtils.getProperty("db.username");
-        String password = PropertiesUtils.getProperty("db.password");
+        log.info("Начинаем попытку установить соединение с базой данных...");
+
+        String url = PropertiesUtils.getInstance().getProperty("db.url");
+        String username = PropertiesUtils.getInstance().getProperty("db.username");
+        String password = PropertiesUtils.getInstance().getProperty("db.password");
+        log.debug("Данные для подключения: url:{}, username:{}", url, username);
 
         try {
-            Class.forName(PropertiesUtils.getProperty("db.driver"));
+            Class.forName(PropertiesUtils.getInstance().getProperty("db.driver"));
+            log.info("JDBC драйвер загружен: {}", PropertiesUtils.getInstance().getProperty("db.driver"));
         } catch (ClassNotFoundException e) {
+            log.error("JDBC Driver не найден: {}", e.getMessage(), e);
             throw new RuntimeException("JDBC Driver not found: " + e.getMessage(), e);
         }
 
-        return DriverManager.getConnection(url, username, password);
+        try {
+            Connection connection = DriverManager.getConnection(url, username, password);
+            log.info("Соединение с базой данных успешно установлено.");
+            return connection;
+        } catch (SQLException e) {
+            log.error("Ошибка при попытке установить соединение с базой данных: {}", e.getMessage(), e);
+            throw new SQLException("Failed to establish connection to database: " + e.getMessage(), e);
+        }
     }
 }
