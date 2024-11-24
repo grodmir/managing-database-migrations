@@ -17,14 +17,14 @@ public class ConnectionManager {
     public static Connection getConnection() throws SQLException {
         log.info("Начинаем попытку установить соединение с базой данных...");
 
-        String url = PropertiesUtils.getInstance().getProperty("db.url");
-        String username = PropertiesUtils.getInstance().getProperty("db.username");
-        String password = PropertiesUtils.getInstance().getProperty("db.password");
+        String url = ConfigurationLoader.getInstance().getProperty("db.url");
+        String username = ConfigurationLoader.getInstance().getProperty("db.username");
+        String password = ConfigurationLoader.getInstance().getProperty("db.password");
         log.debug("Данные для подключения: url:{}, username:{}", url, username);
 
         try {
-            Class.forName(PropertiesUtils.getInstance().getProperty("db.driver"));
-            log.info("JDBC драйвер загружен: {}", PropertiesUtils.getInstance().getProperty("db.driver"));
+            Class.forName(ConfigurationLoader.getInstance().getProperty("db.driver"));
+            log.info("JDBC драйвер загружен: {}", ConfigurationLoader.getInstance().getProperty("db.driver"));
         } catch (ClassNotFoundException e) {
             log.error("JDBC Driver не найден: {}", e.getMessage(), e);
             throw new RuntimeException("JDBC Driver not found: " + e.getMessage(), e);
