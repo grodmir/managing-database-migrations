@@ -1,4 +1,4 @@
-package org.example;
+package org.example.config;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -6,6 +6,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * Класс для загрузки и управления конфигурационными свойствами.
+ * Реализует паттерн Singleton для обеспечения одного экземпляра.
+ */
 @Slf4j
 public class ConfigurationLoader {
     private static ConfigurationLoader instance;
@@ -17,6 +21,12 @@ public class ConfigurationLoader {
         loadProperties();
     }
 
+    /**
+     * Возвращает единственный экземпляр конфигурационного загрузчика.
+     * Если экземпляр ещё не создан, он будет инициализирован.
+     *
+     * @return Экземпляр класса {@link ConfigurationLoader}.
+     */
     public static ConfigurationLoader getInstance() {
         if (instance == null) {
             synchronized (ConfigurationLoader.class) {
@@ -28,9 +38,6 @@ public class ConfigurationLoader {
         return instance;
     }
 
-    /**
-     * Загружает файл конфигурации.
-     */
     private void loadProperties() {
         try (FileInputStream input = new FileInputStream(CONFIG_FILE)) {
             properties.load(input);
@@ -40,6 +47,14 @@ public class ConfigurationLoader {
         }
     }
 
+    /**
+     * Получает значение свойства из конфигурационного файла.
+     * Если свойство не найдено, генерируется исключение {@link RuntimeException}.
+     *
+     * @param key Ключ свойства.
+     * @return Значение свойства.
+     * @throws RuntimeException если свойство не найдено.
+     */
     public String getProperty(String key) {
         String value = properties.getProperty(key);
         if (value == null) {

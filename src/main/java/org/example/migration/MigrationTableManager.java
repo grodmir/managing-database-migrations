@@ -1,11 +1,15 @@
-package org.example;
+package org.example.migration;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.util.ConnectionManager;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * Класс для управления таблицей миграций в базе данных.
+ */
 @Slf4j
 public class MigrationTableManager {
 
@@ -18,7 +22,7 @@ public class MigrationTableManager {
     """;
 
     /**
-     * Проверяет и создаёт таблицу для хранения применённых миграций.
+     * Проверяет наличие таблицы для хранения выполненных миграций и создаёт её при необходимости.
      */
     public static void ensureMigrationTableExists() {
         log.info("Проверка и создание таблицы для хранения применённых миграций...");

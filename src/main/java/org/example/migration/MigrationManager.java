@@ -1,6 +1,7 @@
-package org.example;
+package org.example.migration;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.util.ConnectionManager;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -13,19 +14,31 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Класс для управления миграциями.
+ * Содержит методы для получения списка ещё не выполненных миграций.
+ */
 @Slf4j
 public class MigrationManager {
 
     private final MigrationFileReader migrationFileReader;
 
+    /**
+     * Конструктор для {@link MigrationManager}.
+     * Инициализирует {@link MigrationFileReader}.
+     *
+     * @param migrationFileReader Экземпляр {@link MigrationFileReader}.
+     */
     public MigrationManager(MigrationFileReader migrationFileReader) {
         this.migrationFileReader = migrationFileReader;
     }
 
     /**
-     * Возвращает список миграций, которые ещё не были применены.
+     * Получает список миграций, которые ещё не были применены.
+     * Проверяет уже применённые миграции, фильтрует их из всех доступных миграций.
      *
-     * @return список миграций, которые ещё не были применены.
+     * @return Список миграций, которые ещё не были выполнены.
+     * @throws IOException Если не удаётся прочитать миграции.
      */
     public List<MigrationFile> getPendingMigrations() throws IOException {
         log.info("Получаем список всех не выполненных миграций...");
@@ -46,6 +59,11 @@ public class MigrationManager {
         return pendingMigrations;
     }
 
+    /**
+     * Возвращает список имен миграций, которые уже были применены.
+     *
+     * @return Множество имен выполненных миграций.
+     */
     private Set<String> getAppliedMigrations() {
         log.info("Пытаемся получить выполенные миграции...");
 
@@ -75,8 +93,14 @@ public class MigrationManager {
         return appliedMigrations;
     }
 
+    /**
+     * Извлекает временную метку из имени файла миграции.
+     * Предполагается, что имя файла начинается с временной метки формата YYYYMMDDHHMMSS.
+     *
+     * @param fileName Имя файла миграции.
+     * @return Временная метка (timestamp) из имени файла.
+     */
     private long extractTimestamp(String fileName) {
-        // Предполагаем, что имя файла начинается с временной метки формата YYYYMMDDHHMMSS
         try {
             String timestampPart = fileName.split("_")[0];
             return Long.parseLong(timestampPart);

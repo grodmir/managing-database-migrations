@@ -1,21 +1,28 @@
-package org.example;
+package org.example.migration;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.util.ConnectionManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Класс для выполнения миграций в базе данных.
+ */
 @Slf4j
 public class MigrationExecutor {
 
     private static final String INSERT_MIGRATION_SQL = "INSERT INTO applied_migrations (file_name, applied_at) VALUES (?, CURRENT_TIMESTAMP)";
 
     /**
-     * Выполняет миграции в одной транзакции.
+     * Выполняет список миграций в одной транзакции.
+     * Каждая миграция выполняется в контексте соединения с базой данных.
+     * При возникновении ошибки транзакция откатывается.
      *
-     * @param migrations список миграций, которые нужно выполнить
+     * @param migrations Список миграций, которые необходимо выполнить.
+     * @throws SQLException если возникает ошибка при выполнении миграций.
      */
     public void executeMigrations(List<MigrationFile> migrations) {
         if (migrations.isEmpty()) {
@@ -51,6 +58,14 @@ public class MigrationExecutor {
         }
     }
 
+    /**
+     * Применяет одну миграцию.
+     * Выполняет SQL-запрос для применения изменений в базе данных.
+     *
+     * @param connection Соединение с базой данных.
+     * @param migration Миграция, которую нужно применить.
+     * @throws SQLException если возникает ошибка при выполнении миграции.
+     */
     private void applyMigration(Connection connection, MigrationFile migration) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(migration.getContent())) {
             statement.executeUpdate();
@@ -61,6 +76,14 @@ public class MigrationExecutor {
         }
     }
 
+    /**
+     * Отмечает миграцию как выполненную в базе данных.
+     * Добавляет запись в таблицу {@code applied_migrations}.
+     *
+     * @param connection Соединение с базой данных.
+     * @param fileName Имя файла миграции.
+     * @throws SQLException если возникает ошибка при записи в таблицу.
+     */
     private void logMigrationAsExecuted(Connection connection, String fileName) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(INSERT_MIGRATION_SQL)) {
             statement.setString(1, fileName);

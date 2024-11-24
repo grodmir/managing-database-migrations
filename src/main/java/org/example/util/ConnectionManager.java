@@ -1,18 +1,24 @@
-package org.example;
+package org.example.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.config.ConfigurationLoader;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * Класс для управления подключениями к базе данных.
+ */
 @Slf4j
 public class ConnectionManager {
 
     /**
      * Создаёт и возвращает новое подключение к базе данных.
+     * Для получения параметров подключения используется {@link ConfigurationLoader}.
      *
-     * @return Объект Connection.
+     * @return Объект {@link Connection} для подключения к базе данных.
+     * @throws SQLException если возникает ошибка при установлении подключения.
      */
     public static Connection getConnection() throws SQLException {
         log.info("Начинаем попытку установить соединение с базой данных...");

@@ -1,6 +1,7 @@
-package org.example;
+package org.example.migration;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.config.ConfigurationLoader;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,21 +10,29 @@ import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Класс для чтения миграционных файлов из указанной директории.
+ */
 @Slf4j
 public class MigrationFileReader {
     private static final String FILE_PATTERN = "\\d{14}_.*\\.sql";
     private final String migrationFolderPath;
 
+    /**
+     * Конструктор для {@link MigrationFileReader}.
+     * Инициализирует путь к папке миграций.
+     */
     public MigrationFileReader() {
         this.migrationFolderPath = ConfigurationLoader.getInstance().getProperty("migration.path");
         log.info("Путь к папке миграций: {}", migrationFolderPath);
     }
 
     /**
-     * Читает и возвращает список миграций из указанной папки.
+     * Читает все миграционные файлы из указанной папки и возвращает их в виде списка объектов {@link MigrationFile}.
+     * Файлы сортируются по имени.
      *
-     * @return Список объектов миграций, отсортированных по имени.
-     * @throws IOException Если файлы не удалось прочитать.
+     * @return Список миграционных файлов.
+     * @throws IOException Если не удаётся прочитать файлы.
      */
     public List<MigrationFile> readMigrationFiles() throws IOException {
         Path migrationPath = Paths.get(migrationFolderPath);
@@ -48,10 +57,10 @@ public class MigrationFileReader {
     }
 
     /**
-     * Читает файл миграции и создаёт объект MigrationFile.
+     * Читает файл миграции и создаёт объект {@link MigrationFile}.
      *
      * @param path Путь к файлу миграции.
-     * @return Объект MigrationFile с содержимым файла.
+     * @return Объект {@link MigrationFile} с содержимым файла.
      */
     private MigrationFile parseMigrationFile(Path path) {
         String fileName = path.getFileName().toString();
